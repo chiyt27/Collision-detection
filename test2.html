@@ -1,0 +1,18 @@
+<html>
+	<head>
+		<script language='javascript'>
+			function chanagePic(picUrl)
+			{
+				document.myPic.src = picUrl;
+			}
+		</script>
+		
+	</head>
+	<body>
+		<form name='myform'>
+			<input type="button" value="1" onclick="chanagePic('images/thumbs/11.jpg')" />
+			<input type="button" value="2" onclick="chanagePic('images/thumbs/10.jpg')" />
+		</form>
+		<img name="myPic" src="images/thumbs/1.jpg">
+	</body>
+</html>
