@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script type="text/javascript">
+			var canvas;
+			var canvasContext;
+
+			var ballR = 10;
+			var ballX = 50;
+			var ballY = 50;
+			var ballLeft = ballX-ballR;
+			var ballRight = ballX+ballR;
+			var ballTop = ballY-ballR;
+			var ballBottom = ballY+ballR;
+			var dx = 0.8;
+			var dy = 0.7;
+
+			var paddleX = 0;
+			var paddleY = 0;
+			var paddleHeight = 50;
+			var paddleWidth = 50;
+
+			var objectArray = [];
+
+			window.onload = function(){
+
+				canvas = document.getElementById('gameCanvas');
+				canvasContext = canvas.getContext('2d');
+
+				paddleY = canvas.height-paddleHeight;
+				objectArray.push({x:paddleX, y:paddleY, height:paddleHeight, width:paddleWidth});
+
+				var frameSecond = 500;
+				setInterval(
+					function(e){
+						//updatePaddlePos(e);
+						collisionDetection();
+						draw();
+					}, 1000/frameSecond);
+				
+
+				canvas.addEventListener('mousemove', updatePaddlePos);
+
+			}
+
+			function draw(){
+				colorRect(0, 0, canvas.width, canvas.height, 'black')
+
+				colorRect(paddleX, paddleY, paddleWidth, paddleHeight, 'white')
+
+				canvasContext.fillStyle = 'red';
+				canvasContext.beginPath();
+				canvasContext.arc(ballX, ballY, ballR, 0, Math.PI*2, true);
+				canvasContext.fill();
+				canvasContext.closePath();
+			}
+
+			function colorRect(leftX,topY, width,height, drawColor) {
+				canvasContext.fillStyle = drawColor;
+				canvasContext.fillRect(leftX,topY, width,height);
+			}
+
+			function collisionDetection(){
+				if(ballX + dx < ballR || ballX + dx > canvas.width-ballR) 
+					dx = -dx;
+				else if( (ballY>=paddleY) && //不高於平台時檢查
+						(
+							((ballX + ballR<=paddleX) && (ballX + dx + ballR)>=paddleX) || //平台左邊界
+							((ballX - ballR>=paddleX+paddleWidth) && (ballX + dx - ballR)<=(paddleX+paddleWidth))
+						)
+					)
+				{
+					dx = -dx;
+				}
+
+
+				if(ballY + dy < ballR || ballY + dy > canvas.height-ballR)
+					dy = -dy;
+				else if((ballX+ballR>=paddleX && ballX-ballR<=paddleX+paddleWidth) &&
+						(ballY+dy+ballR>=paddleY && ballY+ballR<=paddleY)
+					)
+				{	
+					dy = -dy;
+				}
+
+				ballX += dx;
+				ballY += dy;
+
+				ballLeft = ballX-ballR;
+				ballRight = ballX+ballR;
+				ballTop = ballY-ballR;
+				ballBottom = ballY+ballR;
+
+			}
+
+
+			function getMousePos(e){
+				var rect = canvas.getBoundingClientRect();
+				//var main = document.documentElement;
+				var mouseX = e.clientX - rect.left;//-main.scrollLeft
+				var mouseY = e.clientY - rect.top;//-main.scrollTop
+				return {x:mouseX, y:mouseY};
+			}
+
+			function updatePaddlePos(e){
+				var mousePos = getMousePos(e);
+				paddleX = mousePos.x - (paddleWidth/2);
+				objectArray[0].x = paddleX;
+				//paddleY = mousePos.y - (paddleHeight/2);
+				//objectArray[0].y = paddleY;
+			}
+		</script>
+	</head>
+	<body>
+		<canvas id="gameCanvas" width="400" height="300"></canvas>
+		<br />
+	</body>
+</html>
